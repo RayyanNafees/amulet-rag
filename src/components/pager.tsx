@@ -37,6 +37,7 @@ export default function Home() {
 				if (response.ok) {
 					const data = await response.json();
 					setFilePath(data.filePath); // Assuming the backend returns the file path
+					alert(`${data.filePath} uploaded`)
 					// setResponse(data.response); // Set the response if needed
 				} else {
 					alert("Failed to upload file.");
@@ -58,7 +59,7 @@ export default function Home() {
 				{filePath ? (
 					<object
 						className="pdf"
-						data={`/api/uploads/${filePath}`}
+						data={filePath}
 						width="600"
 						title={filePath}
 						height="500"

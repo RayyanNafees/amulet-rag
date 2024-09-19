@@ -20,7 +20,7 @@ export const model = new ChatGoogleGenerativeAI({
 	apiKey: import.meta.env.GOOGLE_API_KEY,
 });
 
-export const process_pdf = async (file_path: string) => {
+export const process_pdf = async (file_path: File) => {
 	const pdf_loader = new PDFLoader(file_path, { splitPages: true });
 	const pages = await pdf_loader.load();
 	console.log("Page length:", pages.length);

@@ -1,21 +1,27 @@
+import { pdfile, pb } from "@/lib/pb";
 import { process_pdf } from "@/utils/rag";
 import type { APIRoute } from "astro";
-import path from "node:path";
-import fs from "node:fs";
+import type { NotesResponse } from "pocketbase-types";
 
-export const POST: APIRoute = async ({ request, redirect, url }) => {
+export const POST: APIRoute = async ({ request, redirect, url, locals }) => {
 	const fd = await request.formData();
 	const file = fd.get("file") as File;
 	if (!file?.name) {
 		console.log(`file not found: ${file}`);
 		return redirect(url.toString());
 	}
-	const file_name = file.name;
-	const file_path = path.resolve("uploads", file_name);
-	fs.writeFileSync(file_path, Buffer.from(await file.arrayBuffer()));
-	console.log({ file_path });
-// 	const file_path_url = `/uploads/${file_name}`;
-// console.log({file_path_url})
-	await process_pdf(file_path);
-	return new Response(JSON.stringify({ filePath: file.name }));
+
+	const record = await pb
+		.collection<NotesResponse>("notes")
+		.create({
+			name: file.name,
+			pdf: file,
+		})
+		.catch((e) => console.error("Pocketbase error", e));
+
+	if (!record?.pdf)
+		return new Response('{"error": "Failed to upload PDF"}', { status: 400 });
+
+	await process_pdf(file);
+	return new Response(JSON.stringify({ filePath: pdfile(record) }));
 };

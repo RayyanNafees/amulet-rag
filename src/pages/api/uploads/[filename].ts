@@ -1,28 +1,22 @@
-import path from "node:path";
 import type { APIRoute } from "astro";
-import fs from "node:fs";
+import { pdfile, pb } from "@/lib/pb";
+import type { NotesResponse } from "pocketbase-types";
 
-export const GET: APIRoute = async ({
-	request,
-	params: { filename },
-	url,
-	redirect,
-}) => {
+export const GET: APIRoute = async ({ params: { filename } }) => {
 	if (!filename) {
 		console.log("No File name", filename);
 		return new Response(JSON.stringify({ error: "Filename not given" }), {
 			status: 400,
 		});
 	}
-	const filePath = path.join(process.cwd(), "uploads", filename);
-	console.log({ filePath });
-	if (!fs.existsSync(filePath)) {
-		console.log("File do not exist on", filePath);
-		return new Response(JSON.stringify({ error: "File not found" }), {
-			status: 404,
-		});
-	}
 
-	const file = fs.readFileSync(filePath);
-	return new Response(file.buffer);
+	console.log({ filename });
+
+	const record = await pb
+		.collection("notes")
+		.getFirstListItem<NotesResponse>(`name="${filename}"`);
+	if (!record.pdf)
+		return new Response('{"error": "No pdf found"}', { status: 404 });
+	// const file = fs.readFileSync(filePath);
+	return new Response(pdfile(record));
 };
