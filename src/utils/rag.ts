@@ -1,7 +1,7 @@
-import { pgvector } from './pg-vector';
+import { pgvector } from "./pg-vector";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import {
-	GoogleGenerativeAIEmbeddings,
+	// GoogleGenerativeAIEmbeddings,
 	ChatGoogleGenerativeAI,
 } from "@langchain/google-genai";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
@@ -32,14 +32,20 @@ export const process_pdf = async (file_path: string) => {
 		chunkOverlap: 1000,
 	});
 
-	context.set(pages.map((p) => p.pageContent).join("\n\n"));
-	const texts = await text_splitter.splitText(context.get());
+	const contents = pages.map((p) => p.pageContent).join("\n\n");
+	const texts = await text_splitter.splitText(contents);
 
-	pgvector.addDocuments(pages)
-
-	vector_index.set(
-		pgvector.asRetriever({ k: 6 })
+	pgvector.addDocuments(
+		texts.map((t, n) => ({
+			id: pages?.[n]?.id || crypto.randomUUID(),
+			metadata: pages?.[n]?.metadata || {},
+			pageContent: t,
+		})),
 	);
 
-	return [vector_index.get(), context.get()];
+	vector_index.set(pgvector.asRetriever({ k: 6 }));
+
+	context.set(contents);
+
+	return [vector_index.get(), contents];
 };

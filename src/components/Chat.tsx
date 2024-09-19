@@ -1,5 +1,5 @@
-const Chat = ({ isUser, userPrompt = "", message = "", loading = false }) => {
-	const createMarkup = (htmlString) => {
+const Chat = ({ isUser=true, userPrompt = "", message = "", loading = false }) => {
+	const createMarkup = (htmlString: string) => {
 		return { __html: htmlString };
 	};
 	return (
@@ -7,7 +7,7 @@ const Chat = ({ isUser, userPrompt = "", message = "", loading = false }) => {
 			{isUser ? (
 				<div className="flex gap-5 justify-start items-center pt-5 text-slate-100 font-roboto">
 					<img
-						src={User}
+						src={'/user.png'}
 						className="m-4"
 						alt="user-profile-img"
 						width={35}
@@ -17,9 +17,10 @@ const Chat = ({ isUser, userPrompt = "", message = "", loading = false }) => {
 				</div>
 			) : (
 				<div className="flex items-center justify-start gap-5 font-roboto mt-5 font-medium tracking-[0.04rem]">
-					<img src={Water} alt="logo" className="m-4" width={35} height={35} />
+					<img src={'/water-icon.png'} alt="logo" className="m-4" width={35} height={35} />
 					<div
 						className="flex flex-col items-start"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 						dangerouslySetInnerHTML={createMarkup(message)}
 					/>
 				</div>

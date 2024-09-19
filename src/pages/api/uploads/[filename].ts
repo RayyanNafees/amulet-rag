@@ -2,7 +2,7 @@ import path from "node:path";
 import type { APIRoute } from "astro";
 import fs from "node:fs";
 
-export const POST: APIRoute = async ({
+export const GET: APIRoute = async ({
 	request,
 	params: { filename },
 	url,
@@ -14,7 +14,8 @@ export const POST: APIRoute = async ({
 			status: 400,
 		});
 	}
-	const filePath = path.join(__dirname, "uploads", filename);
+	const filePath = path.join(process.cwd(), "uploads", filename);
+	console.log({ filePath });
 	if (!fs.existsSync(filePath)) {
 		console.log("File do not exist on", filePath);
 		return new Response(JSON.stringify({ error: "File not found" }), {
