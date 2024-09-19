@@ -4,7 +4,6 @@ import {
 } from "@langchain/community/vectorstores/pgvector";
 import pg from "pg";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import type { PoolConfig } from "pg";
 
 const embeddings = new GoogleGenerativeAIEmbeddings({
 	model: "models/embedding-001",
