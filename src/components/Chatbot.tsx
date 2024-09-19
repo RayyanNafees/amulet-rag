@@ -1,58 +1,33 @@
-"use client";
-import { useState } from "react";
+import { useState } from "preact/hooks";
 import Loader from "./Loader";
 import Chat from "./Chat";
 import showdown from "showdown";
+import { getPromptResponse } from "../utils/api";
+import type { JSX } from "astro/jsx-runtime";
 
-function ChatBot({ filePath }) {
+function ChatBot({ filePath }: { filePath?: string }) {
 	const [prompt, setPrompt] = useState("");
 	const conv = new showdown.Converter();
-	const [chats, setChats] = useState([]);
+	const [chats, setChats] = useState<JSX.Element[]>([]);
 
 	const [loading, setLoading] = useState(false);
 
 	const chat = async () => {
 		setLoading(true);
-		try {
-			const res = await fetch("http://127.0.0.1:5000/ask", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ question: prompt }),
-			});
 
-			if (!res.ok) {
-				throw new Error(`Network response was not ok ${res.statusText}`);
-			}
-
-			const data = await res.text();
-			console.log(res);
-			console.log(data);
-			setChats((prevChats) => [
-				...prevChats,
-				<Chat
-					key={prevChats.length + 1}
-					isUser={false}
-					message={conv.makeHtml(data)}
-					loading={false}
-				/>,
-			]);
-		} catch (error) {
-			console.log(error.message);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const handleChange = (e) => {
-		setPrompt(e.target.value);
-	};
-
-	const handleKeyDown = (e) => {
-		if (e.key === "Enter") {
-			handleSubmit();
-		}
+		const data = await getPromptResponse(prompt).finally(() =>
+			setLoading(false),
+		);
+		console.log(data);
+		setChats((prevChats) => [
+			...prevChats,
+			<Chat
+				key={prevChats.length + 1}
+				isUser={false}
+				message={conv.makeHtml(data)}
+				loading={false}
+			/>,
+		]);
 	};
 
 	const handleSubmit = () => {
@@ -84,15 +59,15 @@ function ChatBot({ filePath }) {
 					<input
 						type="text"
 						value={prompt}
-						onChange={(e) => handleChange(e)}
-						onKeyDown={handleKeyDown}
+						onChange={(e) => setPrompt(e.currentTarget.value)}
+						onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
 						placeholder="Chat..."
 						name="chat"
 						id="chat"
 						className={`bg-transparent w-[80%] focus:outline-none ${filePath === null ? "cursor-not-allowed" : ""}`}
 					/>
 					<button
-          type="button"
+						type="button"
 						id="btn"
 						onClick={handleSubmit}
 						className={`py-2 px-2 ${filePath === null ? "cursor-not-allowed" : ""}`}
