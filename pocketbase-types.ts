@@ -9,6 +9,7 @@ export enum Collections {
 	Classes = "classes",
 	Classrooms = "classrooms",
 	Notes = "notes",
+	RegistrationCards = "registration_cards",
 	Subjects = "subjects",
 	Teachers = "teachers",
 	Todos = "todos",
@@ -61,6 +62,17 @@ export type NotesRecord = {
 	pdf?: string
 }
 
+export enum RegistrationCardsSemOptions {
+	"odd" = "odd",
+	"even" = "even",
+}
+export type RegistrationCardsRecord = {
+	enroll?: string
+	ip?: string
+	raw?: string
+	sem?: RegistrationCardsSemOptions
+}
+
 export type SubjectsRecord<Tsyllabus = unknown> = {
 	avatar?: string
 	code?: string
@@ -100,6 +112,7 @@ export type UsersRecord = {
 export type ClassesResponse<Texpand = unknown> = Required<ClassesRecord> & BaseSystemFields<Texpand>
 export type ClassroomsResponse<Texpand = unknown> = Required<ClassroomsRecord> & BaseSystemFields<Texpand>
 export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
+export type RegistrationCardsResponse<Texpand = unknown> = Required<RegistrationCardsRecord> & BaseSystemFields<Texpand>
 export type SubjectsResponse<Tsyllabus = unknown, Texpand = unknown> = Required<SubjectsRecord<Tsyllabus>> & BaseSystemFields<Texpand>
 export type TeachersResponse<Texpand = unknown> = Required<TeachersRecord> & BaseSystemFields<Texpand>
 export type TodosResponse<Texpand = unknown> = Required<TodosRecord> & BaseSystemFields<Texpand>
@@ -111,6 +124,7 @@ export type CollectionRecords = {
 	classes: ClassesRecord
 	classrooms: ClassroomsRecord
 	notes: NotesRecord
+	registration_cards: RegistrationCardsRecord
 	subjects: SubjectsRecord
 	teachers: TeachersRecord
 	todos: TodosRecord
@@ -121,6 +135,7 @@ export type CollectionResponses = {
 	classes: ClassesResponse
 	classrooms: ClassroomsResponse
 	notes: NotesResponse
+	registration_cards: RegistrationCardsResponse
 	subjects: SubjectsResponse
 	teachers: TeachersResponse
 	todos: TodosResponse
@@ -134,6 +149,7 @@ export type TypedPocketBase = PocketBase & {
 	collection(idOrName: 'classes'): RecordService<ClassesResponse>
 	collection(idOrName: 'classrooms'): RecordService<ClassroomsResponse>
 	collection(idOrName: 'notes'): RecordService<NotesResponse>
+	collection(idOrName: 'registration_cards'): RecordService<RegistrationCardsResponse>
 	collection(idOrName: 'subjects'): RecordService<SubjectsResponse>
 	collection(idOrName: 'teachers'): RecordService<TeachersResponse>
 	collection(idOrName: 'todos'): RecordService<TodosResponse>
